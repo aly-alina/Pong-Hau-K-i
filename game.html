@@ -17,7 +17,31 @@
             vacant vertex. If a player can't move, he loses.<br>
             Only one type of position can make a player lose. If both players play perfectly,
             the game continues endlessly with no winner.</div>
-        <div class="box" id="gameBoard" style="display: none;"></div>
+        <div class="box" id="gameBoard" style="display: none;">
+            <table class="boardTable">
+                <tr>
+                    <td class="vertex"></td>
+                    <td></td><td></td><td></td><td></td><td></td><td></td>
+                    <td class="vertex"></td>
+                </tr>
+                <tr>
+                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td></td><td></td><td></td>
+                    <td colspan="2" class="vertex"></td>
+                    <td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td class="vertex"></td>
+                    <td></td><td></td><td></td><td></td><td></td><td></td>
+                    <td class="vertex"></td>
+                </tr>
+            </table>
+        </div>
         <div class="box" id="stop" style="display: none;">The game was stopped</div>
         <script src="js/game.js"></script>
     </body>
