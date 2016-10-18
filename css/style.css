@@ -51,13 +51,16 @@ h1 {
     border: solid 2px black;
 }
 
+.box {
+    margin: 0 auto;
+}
+
 #readme {
     width: 600px;
     height: 360px;
     box-sizing: border-box;
     padding: 3%;
     text-align: left;
-    margin: 0 auto;
     margin-top: 3%;
     font-size: 1.3em;
     border: 1px solid black;
@@ -66,8 +69,14 @@ h1 {
 #gameBoard {
     width: 500px;
     height: 300px;
-    //border: 1px solid black;
     background: url("../images/board.png");
-    margin: 0 auto;
     margin-top: 5%;
+}
+
+#stop {
+    margin-top: 3%;
+    width: 600px;
+    height: 100px;
+    text-align: center;
+    font-size: 2em;
 }
