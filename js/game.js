@@ -53,12 +53,7 @@ var startGame = function(e) {
 };
 
 var stopGame = function(e) {
-    if (gameIsOn) {
-        gameIsOn = false;
-        gameBoardBox.style.display = "none";
-        stopBox.style.display = "block";
-        stopMessageOn = true;
-    }
+    stop();
 };
 
 var showReadme = function (e) {
@@ -113,6 +108,15 @@ var reset = function() {
     initTokensOfAPlayer(initialVerticesPlayer2, tokens.player2);
 };
 
+var stop = function() {
+    if (gameIsOn) {
+        gameIsOn = false;
+        gameBoardBox.style.display = "none";
+        stopBox.style.display = "block";
+        stopMessageOn = true;
+    }
+};
+
 var turnOffReadme = function() {
     readmeIsOn = false;
     readmeBox.style.display = "none";
@@ -126,6 +130,9 @@ var turnOffStopMessage = function() {
 var startPlayer1Turn = function() {
     player2Turn = false;
     player1Turn = true;
+    if (checkIfLose("player1")) {
+        stop();
+    }
     displayTextWhosTurn(player1Name, playerOneColor);
     changeDraggableAttribute(tokens.player1, true);
     changeDraggableAttribute(tokens.player2, false);
@@ -134,6 +141,9 @@ var startPlayer1Turn = function() {
 var startPlayer2Turn = function() {
     player1Turn = false;
     player2Turn = true;
+    if (checkIfLose("player2")) {
+        stop();
+    }
     displayTextWhosTurn(player2Name, playerTwoColor);
     changeDraggableAttribute(tokens.player2, true);
     changeDraggableAttribute(tokens.player1, false);
@@ -179,33 +189,69 @@ var emptyVertices = function() {
     }
 };
 
-var checkIfOccupiedOrNotAdjacent = function(targetVertex) {
-    if (targetVertex.id == 'middleVertex' && checkIfMiddleIsOccupied()) {
-        return true;
-    } else if(targetVertex.nodeName == "IMG") {
-        return true;
-    } else if(!isAdjacent(targetVertex)) {
+var checkIfLose = function(player) {
+    if (tokens.hasOwnProperty(player)) {
+        var playersTokens = tokens[player];
+        for (var i = 0; i < playersTokens.length; i++) {
+            var thisTokenId = playersTokens[i];
+            var tokenPosition = findWhereIsToken(thisTokenId);
+            if (!checkIfAdjacentAreOccupied(tokenPosition)) { // at least one adjacent vertex is free
+                return false;
+            }
+        }
         return true;
     }
-    return false;
 };
 
-var checkIfMiddleIsOccupied = function() {
-    var currentChildrenOfVertex = document.getElementById('middleVertex').childNodes;
+var findWhereIsToken = function(tokenId) {
+    for (var vertex in currentTokensPositions) {
+        if (currentTokensPositions[vertex] == tokenId) {
+            return vertex;
+        }
+    }
+    return "-1";
+};
+
+var checkIfAdjacentAreOccupied = function(vertex) {
+    if (adjacentVertices.hasOwnProperty(vertex)) {
+        var adjacent = adjacentVertices[vertex];
+        for (var i = 0; i < adjacent.length; i++) {
+            var vertexElement = document.getElementById(adjacent[i]);
+            if (!checkIfOccupied(vertexElement)) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+var checkIfOccupiedOrNotAdjacent = function(targetVertex) {
+    return checkIfOccupied(targetVertex) || !isAdjacent(vertexLeftEmpty, targetVertex);
+};
+
+var checkIfOccupied = function(targetVertex) {
+    if ( checkIfOccupiedWithChildren(targetVertex.id) || targetVertex.nodeName == "IMG") {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+var checkIfOccupiedWithChildren = function(vertexId) {
+    var currentChildrenOfVertex = document.getElementById(vertexId).childNodes;
     for (var i = 0; i < currentChildrenOfVertex.length; i++) {
         if (currentChildrenOfVertex[i].nodeName == "IMG") {
             return true;
         }
     }
+    return false;
 };
 
-var isAdjacent = function(targetVertex) {
-    console.log(vertexLeftEmpty);
-    console.log(targetVertex.id);
-    if (adjacentVertices.hasOwnProperty(vertexLeftEmpty)) {
-        var thisAdjacentVertices = adjacentVertices[vertexLeftEmpty];
+var isAdjacent = function(vertex1, vertex2) {
+    if (adjacentVertices.hasOwnProperty(vertex1)) {
+        var thisAdjacentVertices = adjacentVertices[vertex1];
         for (var i = 0; i < thisAdjacentVertices.length; i++) {
-            if (thisAdjacentVertices[i] == targetVertex.id) {
+            if (thisAdjacentVertices[i] == vertex2.id) {
                 return true;
             }
         }
