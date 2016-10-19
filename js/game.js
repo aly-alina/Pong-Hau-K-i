@@ -6,14 +6,19 @@ var stopMessageOn = false;
 var readmeBox = document.getElementById("readme");
 var gameBoardBox = document.getElementById("gameBoard");
 var stopBox = document.getElementById("stop");
-var vertices = {
+var tokensInVertices = {
     'topLeftVertex': "",
     'topRightVertex': "",
     'middleVertex': "",
     'bottomLeftVertex': "",
     'bottomRightVertex': ""
 };
-var tokens = ["tokenPlayer1", "token2Player1", "tokenPlayer2", "token2Player2"];
+var initVerticesPlayer1 = ["topLeftVertex", "topRightVertex"];
+var initVerticesPlayer2 = ["bottomLeftVertex", "bottomRightVertex"];
+var tokens = {
+    "player1": ["tokenPlayer1", "token2Player1"],
+    "player2": ["tokenPlayer2", "token2Player2"]
+};
 
 /* -------- EVENT HANDLERS ---------- */
 
@@ -56,8 +61,8 @@ function allowDrop(e) {
 
 function drag(e) {
     var parentId = e.target.parentElement.id;
-    if (vertices.hasOwnProperty(parentId)) {
-        vertices[parentId] = ""; // token leaves the vertex
+    if (tokensInVertices.hasOwnProperty(parentId)) {
+        tokensInVertices[parentId] = ""; // token leaves the vertex
     }
     e.dataTransfer.setData("Text", e.target.id);
 }
@@ -75,24 +80,17 @@ function drop(e) {
         }
     }
 
-    if (element.nodeName !== "IMG") { // prevent dragging several images in one vertex (for the rest of vertices)
+    if (element.nodeName !== "IMG") { // prevent dragging several images in one vertex (for the rest of tokensInVertices)
         element.appendChild(document.getElementById(data));
-        vertices[element.id] = data; // token in this vertex now
+        tokensInVertices[element.id] = data; // token in this vertex now
     }
 }
 
 /* -------- CONTROL ------------ */
 
 var reset = function() {
-    var initImagesBox = document.getElementById("initImages");
-    for (var i in tokens) {
-        initImagesBox.appendChild(document.getElementById(tokens[i])); // return tokens to be below the gameboard
-    }
-    for (var property in vertices) {
-        if (vertices.hasOwnProperty(property)) {
-            vertices[property] = ""; // clean vertices object
-        }
-    }
+    initTokensOfAPlayer(initVerticesPlayer1, tokens.player1);
+    initTokensOfAPlayer(initVerticesPlayer2, tokens.player2);
 };
 
 var turnOffReadme = function() {
@@ -103,4 +101,14 @@ var turnOffReadme = function() {
 var turnOffStopMessage = function() {
     stopMessageOn = false;
     stopBox.style.display = "none";
+};
+
+/* ------------- COMMON FUNCTIONS -------- */
+
+var initTokensOfAPlayer = function (initVertices, playerTokens) {
+    for (var i = 0; i < initVertices.length; i++) {
+        document.getElementById(initVertices[i])
+            .appendChild(document.getElementById(playerTokens[i]));
+        tokensInVertices[initVertices[i]] = playerTokens[i];
+    }
 };
