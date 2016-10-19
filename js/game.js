@@ -66,7 +66,16 @@ function drop(e) {
     e.preventDefault();
     var data = e.dataTransfer.getData("Text");
     var element = e.target;
-    if (element.nodeName !== "IMG") { // prevent dragging all images in one box
+
+    // prevent to add several token in the middle vertex
+    var currentChildren = element.childNodes;
+    for (var i = 0; i < currentChildren.length; i++) {
+        if (currentChildren[i].nodeName == "IMG") {
+            return;
+        }
+    }
+
+    if (element.nodeName !== "IMG") { // prevent dragging several images in one vertex (for the rest of vertices)
         element.appendChild(document.getElementById(data));
         vertices[element.id] = data; // token in this vertex now
     }
