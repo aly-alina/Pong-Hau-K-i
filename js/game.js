@@ -92,6 +92,11 @@ function drop(e) {
     if (targetVertex.nodeName !== "IMG") {
         targetVertex.appendChild(document.getElementById(data));
         currentTokensPositions[targetVertex.id] = data; // token in this vertex now
+        if (player1Turn) {
+            stopPlayer1Turn();
+        } else if (player2Turn) {
+            stopPlayer2Turn();
+        }
     }
 }
 
@@ -116,14 +121,26 @@ var startPlayer1Turn = function() {
     player2Turn = false;
     player1Turn = true;
     displayTextWhosTurn(player1Name, playerOneColor);
-    blockDraggingForOtherPlayer(tokens.player2);
+    changeDraggableAttribute(tokens.player1, true);
+    changeDraggableAttribute(tokens.player2, false);
 };
 
 var startPlayer2Turn = function() {
     player1Turn = false;
     player2Turn = true;
     displayTextWhosTurn(player2Name, playerTwoColor);
-    blockDraggingForOtherPlayer(tokens.player1);
+    changeDraggableAttribute(tokens.player2, true);
+    changeDraggableAttribute(tokens.player1, false);
+};
+
+var stopPlayer1Turn = function() {
+    player1Turn = false;
+    startPlayer2Turn();
+};
+
+var stopPlayer2Turn = function() {
+    player2Turn = false;
+    startPlayer1Turn();
 };
 
 /* ------------- COMMON FUNCTIONS -------- */
@@ -142,8 +159,8 @@ var displayTextWhosTurn = function(nameOfPlayer, playerColor) {
     boxForCurrentPlayerDisplay.style.color = playerColor;
 };
 
-var blockDraggingForOtherPlayer = function(thisPlayerTokens) {
+var changeDraggableAttribute = function(thisPlayerTokens, boolValue) {
     for (var i = 0; i < thisPlayerTokens.length; i++) {
-        document.getElementById(thisPlayerTokens[i]).setAttribute("draggable", "false");
+        document.getElementById(thisPlayerTokens[i]).setAttribute("draggable", boolValue);
     }
 };
