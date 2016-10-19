@@ -19,6 +19,13 @@ var tokens = {
     "player1": ["tokenPlayer1", "token2Player1"],
     "player2": ["tokenPlayer2", "token2Player2"]
 };
+var player1Turn = false;
+var player2Turn = false;
+var boxForCurrentPlayerDisplay = document.getElementById("whosTurn");
+var player1Name = "Player 1";
+var playerOneColor = "#9ab7f3";
+var player2Name = "Player 2";
+var playerTwoColor = "#1abc9c";
 
 /* -------- EVENT HANDLERS ---------- */
 
@@ -33,6 +40,7 @@ var startGame = function(e) {
         gameIsOn = true;
         gameBoardBox.style.display = "block";
         reset();
+        startPlayer1Turn();
     }
 };
 
@@ -104,6 +112,20 @@ var turnOffStopMessage = function() {
     stopBox.style.display = "none";
 };
 
+var startPlayer1Turn = function() {
+    player2Turn = false;
+    player1Turn = true;
+    displayTextWhosTurn(player1Name, playerOneColor);
+    blockDraggingForOtherPlayer(tokens.player2);
+};
+
+var startPlayer2Turn = function() {
+    player1Turn = false;
+    player2Turn = true;
+    displayTextWhosTurn(player2Name, playerTwoColor);
+    blockDraggingForOtherPlayer(tokens.player1);
+};
+
 /* ------------- COMMON FUNCTIONS -------- */
 
 var initTokensOfAPlayer = function (initVertices, playerTokens) {
@@ -112,5 +134,16 @@ var initTokensOfAPlayer = function (initVertices, playerTokens) {
         document.getElementById(initVertices[i])
             .appendChild(document.getElementById(playerTokens[i]));
         currentTokensPositions[initVertices[i]] = playerTokens[i];
+    }
+};
+
+var displayTextWhosTurn = function(nameOfPlayer, playerColor) {
+    boxForCurrentPlayerDisplay.innerHTML = nameOfPlayer + " turn";
+    boxForCurrentPlayerDisplay.style.color = playerColor;
+};
+
+var blockDraggingForOtherPlayer = function(thisPlayerTokens) {
+    for (var i = 0; i < thisPlayerTokens.length; i++) {
+        document.getElementById(thisPlayerTokens[i]).setAttribute("draggable", "false");
     }
 };
