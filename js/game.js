@@ -6,7 +6,7 @@ var stopMessageOn = false;
 var readmeBox = document.getElementById("readme");
 var gameBoardBox = document.getElementById("gameBoard");
 var stopBox = document.getElementById("stop");
-var currentTokensPositions = {
+var currentTokensPositions = { // keeps which token is inside which vertex (vertexId -> tokenId)
     'topLeftVertex': "",
     'topRightVertex': "",
     'middleVertex': "",
@@ -84,7 +84,8 @@ var drop = function(e) {
     var data = e.dataTransfer.getData("Text");
     var targetVertex = e.target;
 
-    if(checkIfOccupiedOrNotAdjacent(targetVertex)) { // prevent dragging to occupied or not adjacent vertex
+    // prevent dragging to occupied or not adjacent vertex
+    if(checkIfOccupied(targetVertex) || !isAdjacent(vertexLeftEmpty, targetVertex.id)) {
         return;
     }
 
@@ -161,26 +162,44 @@ var stopPlayer2Turn = function() {
 
 /* ------------- OTHER FUNCTIONS -------- */
 
-var initTokensOfAPlayer = function (initVertices, playerTokens) {
-    for (var i = 0; i < initVertices.length; i++) {
+/**
+ * Moves tokens of a player i into the initial vertices so, resets tokens' positions
+ * @param initVerticesIds - array with vertices ids: which vertices put tokens in
+ * @param playerTokensIds - array with ids of tokens of this player
+ */
+var initTokensOfAPlayer = function (initVerticesIds, playerTokensIds) {
+    for (var i = 0; i < initVerticesIds.length; i++) {
         // move token to initial position
-        document.getElementById(initVertices[i])
-            .appendChild(document.getElementById(playerTokens[i]));
-        currentTokensPositions[initVertices[i]] = playerTokens[i];
+        document.getElementById(initVerticesIds[i])
+            .appendChild(document.getElementById(playerTokensIds[i]));
+        currentTokensPositions[initVerticesIds[i]] = playerTokensIds[i];
     }
 };
 
+/**
+ * Displays below the gameboard who's turn is now
+ * @param nameOfPlayer - string, name of the current player
+ * @param playerColor - string with color of player's tokens
+ */
 var displayTextWhosTurn = function(nameOfPlayer, playerColor) {
     boxForCurrentPlayerDisplay.innerHTML = nameOfPlayer + " turn";
     boxForCurrentPlayerDisplay.style.color = playerColor;
 };
 
-var changeDraggableAttribute = function(thisPlayerTokens, boolValue) {
-    for (var i = 0; i < thisPlayerTokens.length; i++) {
-        document.getElementById(thisPlayerTokens[i]).setAttribute("draggable", boolValue);
+/**
+ * Changes draggable attribute to the needed value
+ * @param thisPlayerTokensIds - array with ids of player's tokens
+ * @param boolValue - true if allow dragging; false if block dragging
+ */
+var changeDraggableAttribute = function(thisPlayerTokensIds, boolValue) {
+    for (var i = 0; i < thisPlayerTokensIds.length; i++) {
+        document.getElementById(thisPlayerTokensIds[i]).setAttribute("draggable", boolValue);
     }
 };
 
+/**
+ * Reset object 'currentTokensPositions' so all properties have empty strings
+ */
 var emptyVertices = function() {
     for (var property in currentTokensPositions) {
         if (currentTokensPositions.hasOwnProperty(property)) {
@@ -189,32 +208,70 @@ var emptyVertices = function() {
     }
 };
 
+/**
+ * Checks if a player has lost the game
+ * The game is lost when all adjacent vertices for this player are occupied (player cannot move anymore)
+ * @param player - string, property of object 'tokens'
+ * @returns {boolean} - true if the player has lost, false if there is at least one free adjacent vertex
+ */
 var checkIfLose = function(player) {
     if (tokens.hasOwnProperty(player)) {
         var playersTokens = tokens[player];
-        for (var i = 0; i < playersTokens.length; i++) {
+        for (var i = 0; i < playersTokens.length; i++) { // check each token's adjacent vertices
             var thisTokenId = playersTokens[i];
             var tokenPosition = findWhereIsToken(thisTokenId);
-            if (!checkIfAdjacentAreOccupied(tokenPosition)) { // at least one adjacent vertex is free
+            if (!checkIfAllAdjacentAreOccupied(tokenPosition)) {
                 return false;
             }
         }
         return true;
     }
+    console.log("This player does not exists (check properties of object 'tokens')");
 };
 
+/**
+ * Checks whether vertex2 is one of the adjacent vertices of vertex1
+ * @param vertex1Id - id of the first vertex
+ * @param vertex2Id - id of the second vertex
+ * @returns {boolean}
+ */
+var isAdjacent = function(vertex1Id, vertex2Id) {
+    if (adjacentVertices.hasOwnProperty(vertex1Id)) {
+        var vertex1AdjacentVertices = adjacentVertices[vertex1Id];
+        for (var i = 0; i < vertex1AdjacentVertices.length; i++) {
+            if (vertex1AdjacentVertices[i] == vertex2Id) {
+                return true;
+            }
+        }
+        return false;
+    }
+    console.log("vertexId argument is incorrect");
+    return false;
+};
+
+/**
+ * Find at which vertex the token is located
+ * @param tokenId - find position of this token
+ * @returns {string} id of the vertex which contains this token
+ */
 var findWhereIsToken = function(tokenId) {
     for (var vertex in currentTokensPositions) {
         if (currentTokensPositions[vertex] == tokenId) {
             return vertex;
         }
     }
-    return "-1";
+    console.log("Token is not registered at any position in object 'currentTokensPositions'");
 };
 
-var checkIfAdjacentAreOccupied = function(vertex) {
-    if (adjacentVertices.hasOwnProperty(vertex)) {
-        var adjacent = adjacentVertices[vertex];
+/**
+ * Iterates through all adjacent vertices of input vertex and checks whether they are free or not
+ * @param vertexId - check all adjacent vertices of this vertex
+ * @returns {boolean} - true if all adjacent vertices are occupied;
+ * false if at least one adjacent vertex is free
+ */
+var checkIfAllAdjacentAreOccupied = function(vertexId) {
+    if (adjacentVertices.hasOwnProperty(vertexId)) {
+        var adjacent = adjacentVertices[vertexId];
         for (var i = 0; i < adjacent.length; i++) {
             var vertexElement = document.getElementById(adjacent[i]);
             if (!checkIfOccupied(vertexElement)) {
@@ -223,37 +280,31 @@ var checkIfAdjacentAreOccupied = function(vertex) {
         }
         return true;
     }
+    console.log("Input vertex id is incorrect");
+    return true;
 };
 
-var checkIfOccupiedOrNotAdjacent = function(targetVertex) {
-    return checkIfOccupied(targetVertex) || !isAdjacent(vertexLeftEmpty, targetVertex);
-};
-
+/**
+ * Checks whether this vertex has any tokens inside
+ * Sometimes target is not the container but the image itself of that container
+ * That is why condition after OR is needed
+ * @param targetVertex - vertex html element
+ * @returns {boolean}
+ */
 var checkIfOccupied = function(targetVertex) {
-    if ( checkIfOccupiedWithChildren(targetVertex.id) || targetVertex.nodeName == "IMG") {
-        return true;
-    } else {
-        return false;
-    }
+    return checkIfOccupiedWithChildren(targetVertex.id) || targetVertex.nodeName == "IMG"
 };
 
+/**
+ * Iterates through all the children of the vertex and checks if there is an image among them
+ * @param vertexId - id of the vertex to check
+ * @returns {boolean}
+ */
 var checkIfOccupiedWithChildren = function(vertexId) {
     var currentChildrenOfVertex = document.getElementById(vertexId).childNodes;
     for (var i = 0; i < currentChildrenOfVertex.length; i++) {
         if (currentChildrenOfVertex[i].nodeName == "IMG") {
             return true;
-        }
-    }
-    return false;
-};
-
-var isAdjacent = function(vertex1, vertex2) {
-    if (adjacentVertices.hasOwnProperty(vertex1)) {
-        var thisAdjacentVertices = adjacentVertices[vertex1];
-        for (var i = 0; i < thisAdjacentVertices.length; i++) {
-            if (thisAdjacentVertices[i] == vertex2.id) {
-                return true;
-            }
         }
     }
     return false;
