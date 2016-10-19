@@ -13,6 +13,7 @@ var vertices = {
     'bottomLeftVertex': "",
     'bottomRightVertex': ""
 };
+var tokens = ["tokenPlayer1", "token2Player1", "tokenPlayer2", "token2Player2"];
 
 /* -------- EVENT HANDLERS ---------- */
 
@@ -26,6 +27,7 @@ var startGame = function(e) {
         }
         gameIsOn = true;
         gameBoardBox.style.display = "block";
+        reset();
     }
 };
 
@@ -55,7 +57,7 @@ function allowDrop(e) {
 function drag(e) {
     var parentId = e.target.parentElement.id;
     if (vertices.hasOwnProperty(parentId)) {
-        vertices[parentId] = "";
+        vertices[parentId] = ""; // token leaves the vertex
     }
     e.dataTransfer.setData("Text", e.target.id);
 }
@@ -66,11 +68,23 @@ function drop(e) {
     var element = e.target;
     if (element.nodeName !== "IMG") { // prevent dragging all images in one box
         element.appendChild(document.getElementById(data));
-        vertices[element.id] = data;
+        vertices[element.id] = data; // token in this vertex now
     }
 }
 
 /* -------- CONTROL ------------ */
+
+var reset = function() {
+    var initImagesBox = document.getElementById("initImages");
+    for (var i in tokens) {
+        initImagesBox.appendChild(document.getElementById(tokens[i])); // return tokens to be below the gameboard
+    }
+    for (var property in vertices) {
+        if (vertices.hasOwnProperty(property)) {
+            vertices[property] = ""; // clean vertices object
+        }
+    }
+};
 
 var turnOffReadme = function() {
     readmeIsOn = false;
