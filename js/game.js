@@ -6,6 +6,13 @@ var stopMessageOn = false;
 var readmeBox = document.getElementById("readme");
 var gameBoardBox = document.getElementById("gameBoard");
 var stopBox = document.getElementById("stop");
+var vertices = {
+    'topLeftVertex': "",
+    'topRightVertex': "",
+    'middleVertex': "",
+    'bottomLeftVertex': "",
+    'bottomRightVertex': ""
+};
 
 /* -------- EVENT HANDLERS ---------- */
 
@@ -55,6 +62,7 @@ function drop(e) {
     var element = e.target;
     if (element.nodeName !== "IMG") { // prevent dragging all images in one box
         element.appendChild(document.getElementById(data));
+        vertices[element.id] = data;
     }
 }
 
