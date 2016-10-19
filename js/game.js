@@ -41,6 +41,23 @@ var showReadme = function (e) {
     }
 };
 
+function allowDrop(e) {
+    e.preventDefault();
+}
+
+function drag(e) {
+    e.dataTransfer.setData("Text", e.target.id);
+}
+
+function drop(e) {
+    e.preventDefault();
+    var data = e.dataTransfer.getData("Text");
+    var element = e.target;
+    if (element.nodeName !== "IMG") { // prevent dragging all images in one box
+        element.appendChild(document.getElementById(data));
+    }
+}
+
 /* -------- CONTROL ------------ */
 
 var turnOffReadme = function() {

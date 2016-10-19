@@ -81,9 +81,11 @@ h1 {
     height: 100%;
 }
 
-/*td {*/
-    /*border: 1px solid black;*/
-/*}*/
+td {
+    border: 1px solid black;
+    width: 60px;
+    height: 60px;
+}
 
 #stop {
     margin-top: 3%;

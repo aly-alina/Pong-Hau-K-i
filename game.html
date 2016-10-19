@@ -20,27 +20,32 @@
         <div class="box" id="gameBoard" style="display: none;">
             <table class="boardTable">
                 <tr>
-                    <td class="vertex"></td>
+                    <td id="topLeftVertex" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
                     <td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td class="vertex"></td>
+                    <td id="topRightVertex" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
+                </tr>
+                <tr>
+                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                </tr>
+                <tr id="middleRow">
+                    <td></td><td></td><td></td>
+                    <td id="middleVertex" ondrop="drop(event)" ondragover="allowDrop(event)" colspan="2">
+                    </td>
+                    <td></td><td></td><td></td>
                 </tr>
                 <tr>
                     <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 </tr>
                 <tr>
-                    <td></td><td></td><td></td>
-                    <td colspan="2" class="vertex"></td>
-                    <td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-                <tr>
-                    <td class="vertex"></td>
+                    <td id="bottomLeftVertex" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
                     <td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td class="vertex"></td>
+                    <td id="bottomRightVertex" ondrop="drop(event)" ondragover="allowDrop(event)"></td>
                 </tr>
             </table>
+            <img id="tokenPlayer1" src="images/tokenSmall.png" draggable="true" ondragstart="drag(event)">
+            <img id="token2Player1" src="images/tokenSmall.png" draggable="true" ondragstart="drag(event)">
+            <img id="tokenPlayer2" src="images/tokenSmall2.png" draggable="true" ondragstart="drag(event)">
+            <img id="token2Player2" src="images/tokenSmall2.png" draggable="true" ondragstart="drag(event)">
         </div>
         <div class="box" id="stop" style="display: none;">The game was stopped</div>
         <script src="js/game.js"></script>
