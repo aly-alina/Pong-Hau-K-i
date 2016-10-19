@@ -53,6 +53,10 @@ function allowDrop(e) {
 }
 
 function drag(e) {
+    var parentId = e.target.parentElement.id;
+    if (vertices.hasOwnProperty(parentId)) {
+        vertices[parentId] = "";
+    }
     e.dataTransfer.setData("Text", e.target.id);
 }
 
