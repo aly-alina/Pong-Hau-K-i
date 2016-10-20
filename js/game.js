@@ -15,17 +15,21 @@ var currentTokensPositions = { // keeps which token is inside which vertex (vert
 };
 var initialVerticesPlayer1 = ["topLeftVertex", "topRightVertex"];
 var initialVerticesPlayer2 = ["bottomLeftVertex", "bottomRightVertex"];
-var tokens = {
-    "player1": ["tokenPlayer1", "token2Player1"],
-    "player2": ["tokenPlayer2", "token2Player2"]
+var players = {
+    "player1": {
+        "name": "Player 1",
+        "color": "#9ab7f3",
+        "turn": false,
+        "tokens": ["tokenPlayer1", "token2Player1"]
+    },
+    "player2": {
+        "name": "Player 2",
+        "color": "#1abc9c",
+        "turn": false,
+        "tokens": ["tokenPlayer2", "token2Player2"]
+    }
 };
-var player1Turn = false;
-var player2Turn = false;
 var boxForCurrentPlayerDisplay = document.getElementById("whosTurn");
-var player1Name = "Player 1";
-var playerOneColor = "#9ab7f3";
-var player2Name = "Player 2";
-var playerTwoColor = "#1abc9c";
 var vertexLeftEmpty = "";
 var adjacentVertices = {
     'topLeftVertex': ['middleVertex', 'bottomLeftVertex'],
@@ -53,7 +57,7 @@ var startGame = function(e) {
 };
 
 var stopGame = function(e) {
-    stop();
+    stop("The game was stopped", "black");
 };
 
 var showReadme = function (e) {
@@ -91,9 +95,9 @@ var drop = function(e) {
 
     targetVertex.appendChild(document.getElementById(data));
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
-    if (player1Turn) {
+    if (players['player1'].turn) {
         stopPlayer1Turn();
-    } else if (player2Turn) {
+    } else if (players['player2'].turn) {
         stopPlayer2Turn();
     }
 };
@@ -103,19 +107,25 @@ var drop = function(e) {
 var reset = function() {
     vertexLeftEmpty = "";
     emptyVertices();
-    player1Turn = false;
-    player2Turn = false;
-    initTokensOfAPlayer(initialVerticesPlayer1, tokens.player1);
-    initTokensOfAPlayer(initialVerticesPlayer2, tokens.player2);
+    players['player1'].turn = false;
+    players['player2'].turn = false;
+    initTokensOfAPlayer(initialVerticesPlayer1, players['player1'].tokens);
+    initTokensOfAPlayer(initialVerticesPlayer2, players['player2'].tokens);
 };
 
-var stop = function() {
+var stop = function(text, color) {
     if (gameIsOn) {
         gameIsOn = false;
         gameBoardBox.style.display = "none";
         stopBox.style.display = "block";
+        stopBox.innerHTML = text;
+        stopBox.style.color = color;
         stopMessageOn = true;
     }
+};
+
+var lose = function(playersPropertyName) {
+    stop(players[playersPropertyName].name + " lost", players[playersPropertyName].color);
 };
 
 var turnOffReadme = function() {
@@ -129,34 +139,38 @@ var turnOffStopMessage = function() {
 };
 
 var startPlayer1Turn = function() {
-    player2Turn = false;
-    player1Turn = true;
+    players['player2'].turn = false;
+    players['player1'].turn = true;
     if (checkIfLose("player1")) {
-        stop();
+        // stop();
+        lose("player1");
+        return;
     }
-    displayTextWhosTurn(player1Name, playerOneColor);
-    changeDraggableAttribute(tokens.player1, true);
-    changeDraggableAttribute(tokens.player2, false);
+    displayTextWhosTurn(players['player1'].name, players['player1'].color);
+    changeDraggableAttribute(players['player1'].tokens, true);
+    changeDraggableAttribute(players['player2'].tokens, false);
 };
 
 var startPlayer2Turn = function() {
-    player1Turn = false;
-    player2Turn = true;
+    players['player1'].turn = false;
+    players['player2'].turn = true;
     if (checkIfLose("player2")) {
-        stop();
+        // stop();
+        lose("player2");
+        return;
     }
-    displayTextWhosTurn(player2Name, playerTwoColor);
-    changeDraggableAttribute(tokens.player2, true);
-    changeDraggableAttribute(tokens.player1, false);
+    displayTextWhosTurn(players['player2'].name, players['player2'].color);
+    changeDraggableAttribute(players['player2'].tokens, true);
+    changeDraggableAttribute(players['player1'].tokens, false);
 };
 
 var stopPlayer1Turn = function() {
-    player1Turn = false;
+    players['player1'].turn = false;
     startPlayer2Turn();
 };
 
 var stopPlayer2Turn = function() {
-    player2Turn = false;
+    players['player2'].turn = false;
     startPlayer1Turn();
 };
 
@@ -215,8 +229,8 @@ var emptyVertices = function() {
  * @returns {boolean} - true if the player has lost, false if there is at least one free adjacent vertex
  */
 var checkIfLose = function(player) {
-    if (tokens.hasOwnProperty(player)) {
-        var playersTokens = tokens[player];
+    if (players.hasOwnProperty(player)) {
+        var playersTokens = players[player].tokens;
         for (var i = 0; i < playersTokens.length; i++) { // check each token's adjacent vertices
             var thisTokenId = playersTokens[i];
             var tokenPosition = findWhereIsToken(thisTokenId);
