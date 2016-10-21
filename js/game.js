@@ -17,13 +17,13 @@ var initialVerticesPlayer1 = ["topLeftVertex", "topRightVertex"];
 var initialVerticesPlayer2 = ["bottomLeftVertex", "bottomRightVertex"];
 var players = {
     "player1": {
-        "name": "Player 1",
+        "name": "Your",
         "color": "#9ab7f3",
         "turn": false,
         "tokens": ["tokenPlayer1", "token2Player1"]
     },
     "player2": {
-        "name": "Player 2",
+        "name": "Computer",
         "color": "#1abc9c",
         "turn": false,
         "tokens": ["tokenPlayer2", "token2Player2"]
@@ -121,7 +121,7 @@ var stop = function(text, color) {
 };
 
 var lose = function(playersPropertyName) {
-    stop(players[playersPropertyName].name + " lost", players[playersPropertyName].color);
+    stop(players[playersPropertyName].name + " loss", players[playersPropertyName].color);
 };
 
 var turnOffReadme = function() {
