@@ -95,11 +95,7 @@ var drop = function(e) {
 
     targetVertex.appendChild(document.getElementById(data));
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
-    if (players['player1'].turn) {
-        stopPlayer1Turn();
-    } else if (players['player2'].turn) {
-        stopPlayer2Turn();
-    }
+    stopCurrentPlayerTurn();
 };
 
 /* -------- CONTROL ------------ */
@@ -176,6 +172,14 @@ var stopPlayer2Turn = function() {
     startPlayer1Turn();
 };
 
+var stopCurrentPlayerTurn = function() {
+    if (players['player1'].turn) {
+        stopPlayer1Turn();
+    } else if (players['player2'].turn) {
+        stopPlayer2Turn();
+    }
+};
+
 var commenceMoveWithComputer = function(playersPropertyName) {
     if (players.hasOwnProperty(playersPropertyName)) {
         // 1. find where my tokens
@@ -196,6 +200,7 @@ var commenceMoveWithComputer = function(playersPropertyName) {
         // 3. move the token to that vertex
         moveToken(tokenToMove, vertexToMoveFrom, freeVertexId);
         // 4. give turn to another player
+        stopCurrentPlayerTurn();
     }
 };
 
