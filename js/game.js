@@ -184,12 +184,17 @@ var commenceMoveWithComputer = function(playersPropertyName) {
         for (var i = 0; i < tokensIds.length; i++) {
             computersTokensPositionsIds[i] = findWhereIsToken(tokensIds[i]);
         }
-        // 2. find first adjacent free vertex
-        var freeVertexId = findFreeAdjacentVertex(computersTokensPositionsIds[0]);
+        // 2. find token with first adjacent free vertex
+        var vertexToMoveFrom = computersTokensPositionsIds[0];
+        var tokenToMove = tokensIds[0];
+        var freeVertexId = findFreeAdjacentVertex(vertexToMoveFrom);
         if (!freeVertexId) {
-            freeVertexId = findFreeAdjacentVertex(computersTokensPositionsIds[1]);
+            vertexToMoveFrom = computersTokensPositionsIds[1];
+            tokenToMove = tokensIds[1];
+            freeVertexId = findFreeAdjacentVertex(vertexToMoveFrom);
         }
-        // 3. move to that vertex
+        // 3. move the token to that vertex
+        moveToken(tokenToMove, vertexToMoveFrom, freeVertexId);
         // 4. give turn to another player
     }
 };
@@ -203,10 +208,24 @@ var commenceMoveWithComputer = function(playersPropertyName) {
  */
 var initTokensOfAPlayer = function (initVerticesIds, playerTokensIds) {
     for (var i = 0; i < initVerticesIds.length; i++) {
-        // move token to initial position
-        document.getElementById(initVerticesIds[i])
-            .appendChild(document.getElementById(playerTokensIds[i]));
-        currentTokensPositions[initVerticesIds[i]] = playerTokensIds[i];
+        moveToken(playerTokensIds[i], "", initVerticesIds[i]);
+    }
+};
+
+/**
+ * Moves the token to the specified vertex
+ * @param tokenId - token to move
+ * @param previousVertexId - previous position of that token
+ * @param vertexIdToMoveTo - where to move the token
+ */
+var moveToken = function(tokenId, previousVertexId, vertexIdToMoveTo) {
+    document.getElementById(vertexIdToMoveTo)
+        .appendChild(document.getElementById(tokenId));
+    if (currentTokensPositions.hasOwnProperty(vertexIdToMoveTo)) {
+        currentTokensPositions[vertexIdToMoveTo] = tokenId;
+    }
+    if (currentTokensPositions.hasOwnProperty(previousVertexId)) {
+        currentTokensPositions[previousVertexId] = "";
     }
 };
 
