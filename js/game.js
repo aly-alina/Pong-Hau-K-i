@@ -151,6 +151,7 @@ var startPlayer1Turn = function() {
     changeDraggableAttribute(players['player2'].tokens, false);
 };
 
+// Computer
 var startPlayer2Turn = function() {
     players['player1'].turn = false;
     players['player2'].turn = true;
@@ -162,6 +163,7 @@ var startPlayer2Turn = function() {
     displayTextWhosTurn(players['player2'].name, players['player2'].color);
     changeDraggableAttribute(players['player2'].tokens, true);
     changeDraggableAttribute(players['player1'].tokens, false);
+    commenceMoveWithComputer('player2');
 };
 
 var stopPlayer1Turn = function() {
@@ -172,6 +174,20 @@ var stopPlayer1Turn = function() {
 var stopPlayer2Turn = function() {
     players['player2'].turn = false;
     startPlayer1Turn();
+};
+
+var commenceMoveWithComputer = function(playersPropertyName) {
+    if (players.hasOwnProperty(playersPropertyName)) {
+        // 1. find where my tokens
+        var computersTokensPositionsIds = [];
+        var tokensIds = players[playersPropertyName].tokens;
+        for (var i = 0; i < tokensIds.length; i++) {
+            computersTokensPositionsIds[i] = findWhereIsToken(tokensIds[i]);
+        }
+        // 2. find first adjacent free vertex
+        // 3. move to that vertex
+        // 4. give turn to another player
+    }
 };
 
 /* ------------- OTHER FUNCTIONS -------- */
