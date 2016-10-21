@@ -185,6 +185,10 @@ var commenceMoveWithComputer = function(playersPropertyName) {
             computersTokensPositionsIds[i] = findWhereIsToken(tokensIds[i]);
         }
         // 2. find first adjacent free vertex
+        var freeVertexId = findFreeAdjacentVertex(computersTokensPositionsIds[0]);
+        if (!freeVertexId) {
+            freeVertexId = findFreeAdjacentVertex(computersTokensPositionsIds[1]);
+        }
         // 3. move to that vertex
         // 4. give turn to another player
     }
@@ -250,7 +254,7 @@ var checkIfLose = function(player) {
         for (var i = 0; i < playersTokens.length; i++) { // check each token's adjacent vertices
             var thisTokenId = playersTokens[i];
             var tokenPosition = findWhereIsToken(thisTokenId);
-            if (!checkIfAllAdjacentAreOccupied(tokenPosition)) {
+            if (findFreeAdjacentVertex(tokenPosition)) {
                 return false;
             }
         }
@@ -294,24 +298,23 @@ var findWhereIsToken = function(tokenId) {
 };
 
 /**
- * Iterates through all adjacent vertices of input vertex and checks whether they are free or not
+ * Iterates through all adjacent vertices of input vertex and finds the first one which is free
  * @param vertexId - check all adjacent vertices of this vertex
- * @returns {boolean} - true if all adjacent vertices are occupied;
- * false if at least one adjacent vertex is free
+ * @returns {*} - id of the free vertex or null if all the vertices are occupied
  */
-var checkIfAllAdjacentAreOccupied = function(vertexId) {
+var findFreeAdjacentVertex = function(vertexId) {
     if (adjacentVertices.hasOwnProperty(vertexId)) {
         var adjacent = adjacentVertices[vertexId];
         for (var i = 0; i < adjacent.length; i++) {
             var vertexElement = document.getElementById(adjacent[i]);
             if (!checkIfOccupied(vertexElement)) {
-                return false;
+                return vertexElement.id;
             }
         }
-        return true;
+        return null;
     }
     console.log("Input vertex id is incorrect");
-    return true;
+    return null;
 };
 
 /**
