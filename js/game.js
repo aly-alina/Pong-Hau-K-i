@@ -103,7 +103,29 @@ var displayMap = function(e) {
             data: "",
             dataType: 'json',
             success: function(result){
-                console.log(result);
+                var users = [];
+                var markers = [];
+                for (var i = 0; i < result.length; i++) {
+                    var newUser = {
+                        name: result[i]["name"],
+                        city: result[i]["city"],
+                        wins_num: result[i]["number_of_wins"]
+                    };
+                    users.push(newUser);
+                }
+                var geocoder =  new google.maps.Geocoder();
+                for (var i = 0; i < users.length; i++) {
+                    geocoder.geocode({ 'address': users[i].city}, function(results, status) {
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            markers.push(new google.maps.Marker({
+                                position: results[0].geometry.location,
+                                map: map
+                            }));
+                        } else {
+                            console.log("Marker wasn't added " + status);
+                        }
+                    });
+                }
             },
             error: function (err) {
                 console.log(err);
