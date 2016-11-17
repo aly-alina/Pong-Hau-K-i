@@ -3,6 +3,7 @@
 var gameIsOn = false;
 var readmeIsOn = false;
 var stopMessageOn = false;
+var mapIsOn = false;
 var readmeBox = document.getElementById("readme");
 var gameBoardBox = document.getElementById("gameBoard");
 var stopBox = document.getElementById("stop");
@@ -49,6 +50,9 @@ var startGame = function(e) {
         if (stopMessageOn) {
             turnOffStopMessage();
         }
+        if (mapIsOn) {
+            turnOffMap();
+        }
         $("#registration_form").show();
         // when form is submitted, game board is displayed, see #submit.click event
     }
@@ -63,8 +67,29 @@ var showReadme = function (e) {
         if (stopMessageOn) {
             turnOffStopMessage();
         }
+        if (mapIsOn) {
+            turnOffMap();
+        }
         readmeIsOn = true;
         readmeBox.style.display = "block";
+    }
+};
+
+var displayMap = function(e) {
+    if (!gameIsOn && !mapIsOn) {
+        if (stopMessageOn) {
+            turnOffStopMessage();
+        }
+        if (readmeIsOn) {
+            turnOffReadme();
+        }
+        mapIsOn = true;
+        $("#map_box").show();
+        var thisCenter = {lat: 0, lng: 0};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 1,
+            center: thisCenter
+        });
     }
 };
 
@@ -163,6 +188,11 @@ var turnOffReadme = function() {
 var turnOffStopMessage = function() {
     stopMessageOn = false;
     stopBox.style.display = "none";
+};
+
+var turnOffMap = function() {
+    $("#map_box").hide();
+    mapIsOn = false;
 };
 
 var startPlayer1Turn = function() {

@@ -6,12 +6,14 @@
         <title>Pong Hau Ki</title>
         <link rel="stylesheet" href="css/style.css">
         <script src="js/jquery-3.1.1.min.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js"></script>
     </head>
     <body>
         <h1>Pong Hau K'i</h1>
         <a class="button" href="#" onclick="startGame()">Start</a>
         <a class="button" href="#" onclick="stopGame()">Stop</a>
         <a class="button" href="#" onclick="showReadme()">Readme</a>
+        <a class="button" href="#" onclick="displayMap()">Map</a>
         <div class="box" id="readme" style="display: none;">Pong Hau K'i is a Chinese traditional board game
             for two players.<br> The board consists of 5 vertices and 7 edges. Each player has two pieces.
             Players take turns to move. At each turn, the player moves one of his two pieces into the adjacent
@@ -63,6 +65,10 @@
                 <input type="text" name="age"><br><br>
                 <input id="submit" type="button" value="Submit">
             </form>
+        </div>
+        <div class="box" id="map_box">
+            <h3>Our players:</h3>
+            <div id="map"></div>
         </div>
         <script src="js/game.js"></script>
     </body>

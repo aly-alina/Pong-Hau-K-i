@@ -103,3 +103,13 @@ td {
 #registration_form {
     display: none;
 }
+
+#map_box {
+    width: 40%;
+    display: none;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+}
