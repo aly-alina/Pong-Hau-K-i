@@ -137,8 +137,8 @@ $("#submit").click(function(){
     var name = $("#form > input[name='name']").val();
     var city = $("#form > input[name='city']").val();
     var age = $("#form > input[name='age']").val();
-    if (name == '' || city == '' || age == '') {
-        alert('Some fields are empty');
+    if (name == '' || city == '' || age == '' || isNaN(parseInt(age))) {
+        alert('Some fields are empty or incorrect');
     }
     else {
         var dataString = 'name='+ name + '&city='+ city + '&age='+ age;
