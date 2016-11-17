@@ -98,6 +98,17 @@ var displayMap = function(e) {
             zoom: 1,
             center: thisCenter
         });
+        $.ajax({
+            url: "/resources/fetch_user_info.php",
+            data: "",
+            dataType: 'json',
+            success: function(result){
+                console.log(result);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
     }
 };
 
