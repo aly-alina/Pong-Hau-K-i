@@ -108,12 +108,8 @@ $("#submit").click(function(){
         alert('Some fields are empty');
     }
     else {
-        var json = JSON.stringify({
-            name: name,
-            city: city,
-            age: age
-        });
-        sendData(json);
+        var dataString = 'name='+ name + '&city='+ city + '&age='+ age;
+        sendData(dataString);
         resetForm();
         $("#registration_form").hide();
         displayBoard();
@@ -207,8 +203,20 @@ var stopPlayer2Turn = function() {
 
 /* ------------- OTHER FUNCTIONS -------- */
 
-var sendData = function(json) {
-    $("body").append(json);
+var sendData = function(dataString) {
+    $("body").append(dataString);
+    $.ajax({
+        type: "POST",
+        url: "/resources/update_user_info.php",
+        data: dataString,
+        cache: false,
+        success: function(result){
+            console.log(result);
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
 };
 
 /**
