@@ -204,7 +204,6 @@ var stopPlayer2Turn = function() {
 /* ------------- OTHER FUNCTIONS -------- */
 
 var sendData = function(dataString) {
-    $("body").append(dataString);
     $.ajax({
         type: "POST",
         url: "/resources/update_user_info.php",
