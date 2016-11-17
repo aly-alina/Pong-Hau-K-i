@@ -49,10 +49,8 @@ var startGame = function(e) {
         if (stopMessageOn) {
             turnOffStopMessage();
         }
-        gameIsOn = true;
-        gameBoardBox.style.display = "block";
-        reset();
-        startPlayer1Turn();
+        $("#registration_form").show();
+        // when form is submitted, game board is displayed, see #submit.click event
     }
 };
 
@@ -102,7 +100,40 @@ var drop = function(e) {
     }
 };
 
+$("#submit").click(function(){
+    var name = $("#form > input[name='name']").val();
+    var city = $("#form > input[name='city']").val();
+    var age = $("#form > input[name='age']").val();
+    if (name == '' || city == '' || age == '') {
+        alert('Some fields are empty');
+    }
+    else {
+        var json = JSON.stringify({
+            name: name,
+            city: city,
+            age: age
+        });
+        sendData(json);
+        resetForm();
+        $("#registration_form").hide();
+        displayBoard();
+    }
+});
+
 /* -------- CONTROL ------------ */
+
+var resetForm = function() {
+    $("#form > input[name='name']").val("");
+    $("#form > input[name='city']").val("");
+    $("#form > input[name='age']").val("");
+};
+
+var displayBoard = function() {
+    gameIsOn = true;
+    gameBoardBox.style.display = "block";
+    reset();
+    startPlayer1Turn();
+};
 
 var reset = function() {
     vertexLeftEmpty = "";
@@ -175,6 +206,10 @@ var stopPlayer2Turn = function() {
 };
 
 /* ------------- OTHER FUNCTIONS -------- */
+
+var sendData = function(json) {
+    $("body").append(json);
+};
 
 /**
  * Moves tokens of a player i into the initial vertices so, resets tokens' positions

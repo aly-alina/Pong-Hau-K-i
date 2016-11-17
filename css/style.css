@@ -99,3 +99,7 @@ td {
     margin-top: 2%;
     font-size: 1.5em;
 }
+
+#registration_form {
+    display: none;
+}

@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Pong Hau Ki</title>
         <link rel="stylesheet" href="css/style.css">
+        <script src="js/jquery-3.1.1.min.js"></script>
     </head>
     <body>
         <h1>Pong Hau K'i</h1>
@@ -51,6 +52,18 @@
             <p id="whosTurn"></p>
         </div>
         <div class="box" id="stop" style="display: none;"></div>
+        <div class="box" id="registration_form">
+            <p>Please fill the form before playing:</p>
+            <form id="form">
+                Name:<br>
+                <input type="text" name="name"><br>
+                City:<br>
+                <input type="text" name="city"><br><br>
+                Age:<br>
+                <input type="text" name="age"><br><br>
+                <input id="submit" type="button" value="Submit">
+            </form>
+        </div>
         <script src="js/game.js"></script>
     </body>
 </html>
