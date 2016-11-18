@@ -196,6 +196,14 @@ $("#submit").click(function(){
     }
     else {
         var dataString = 'name='+ name + '&city='+ city + '&age='+ age;
+        var geocoder =  new google.maps.Geocoder();
+        geocoder.geocode({'address': city}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                console.log(results[0].geometry.location);
+            } else {
+                console.log("City does not exist");
+            }
+        });
         sendData(dataString);
         resetForm();
         $("#registration_form").hide();
