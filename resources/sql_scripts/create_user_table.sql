@@ -4,5 +4,7 @@ CREATE TABLE users (
     city VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     number_of_wins INT DEFAULT 0,
+    lat DOUBLE,
+    lng DOUBLE,
     PRIMARY KEY (id)
 );
