@@ -103,51 +103,21 @@ var displayMap = function(e) {
             data: "",
             dataType: 'json',
             success: function(result){
-                var users = [];
-                // var positionObjects = [];
                 for (var i = 0; i < result.length; i++) {
-                    var newUser = {
-                        name: result[i]["name"],
-                        city: result[i]["city"],
-                        wins_num: result[i]["number_of_wins"],
-                        lat: result[i][""]
-                    };
-                    users.push(newUser);
+                    if (result[i]["lat"] != null && result[i]["lng"] != null) {
+                        var marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(result[i]["lat"], result[i]["lng"]),
+                            map: map,
+                            title: result[i]["name"] + ", won " + result[i]["number_of_wins"] + " times"
+                        });
+                        google.maps.event.addListener(marker,'click',function() {
+                            var infowindow = new google.maps.InfoWindow({
+                                content: this.title
+                            });
+                            infowindow.open(map, this);
+                        });
+                    }
                 }
-                // var geocoder =  new google.maps.Geocoder();
-                // for (var i = 0; i < users.length; i++) {
-                //     geocoder.geocode({'address': users[i].city}, function(results, status) {
-                //         if (status == google.maps.GeocoderStatus.OK) {
-                //             positionObjects.push(results[0].geometry.location);
-                //         } else {
-                //             console.log("Marker wasn't added " + status);
-                //             // add empty object so in result positions array is of the same size as users array
-                //             // users may input fake cities
-                //             positionObjects.push({});
-                //         }
-                //         if (positionObjects.length == users.length) {
-                //             // indicator that all callback functions finished
-                //             displayMarkers(positionObjects);
-                //         }
-                //     });
-                // }
-                // function displayMarkers(positions) {
-                //     for (var i = 0; i < positions.length; i++) {
-                //         if (positions[i] != null) {
-                //             var marker = new google.maps.Marker({
-                //                 position: positions[i],
-                //                 map: map,
-                //                 title: users[i].name + ", won " + users[i].wins_num + " times"
-                //             });
-                //             google.maps.event.addListener(marker,'click',function() {
-                //                 var infowindow = new google.maps.InfoWindow({
-                //                     content: this.title
-                //                 });
-                //                 infowindow.open(map, this);
-                //             });
-                //         }
-                //     }
-                // }
             },
             error: function (err) {
                 console.log(err);
