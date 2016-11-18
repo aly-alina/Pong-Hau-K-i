@@ -291,7 +291,8 @@ var sendData = function(dataString) {
             console.log(result);
         },
         error: function (err) {
-            console.log(err);
+            //console.log(err);
+            console.log('exception caught');
         }
     });
 };
