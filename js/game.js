@@ -199,16 +199,17 @@ $("#submit").click(function(){
         var geocoder =  new google.maps.Geocoder();
         geocoder.geocode({'address': city}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                console.log(results[0].geometry.location);
-            } else {
-                console.log("City does not exist");
+                var location = results[0].geometry.location;
+                var latitude = location.lat();
+                var longitude = location.lng();
+                dataString += '&latitude=' + latitude + '&longitude=' + longitude;
             }
+            sendData(dataString);
+            resetForm();
+            $("#registration_form").hide();
+            formIsOn = false;
+            displayBoard();
         });
-        sendData(dataString);
-        resetForm();
-        $("#registration_form").hide();
-        formIsOn = false;
-        displayBoard();
     }
 });
 
