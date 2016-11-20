@@ -293,6 +293,7 @@ var sendData = function(dataString) {
         error: function (err) {
             //console.log(err);
             console.log('exception caught');
+            window.location.href = "/error.html";
         }
     });
 };
