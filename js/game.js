@@ -178,10 +178,7 @@ $("#submit").click(function(){
                 console.log('Geocoder failed');
             }
             sendData(dataString);
-            resetForm();
-            $("#registration_form").hide();
-            formIsOn = false;
-            displayBoard();
+            // board is displayed inside sendData
         });
     }
 });
@@ -291,6 +288,10 @@ var sendData = function(dataString) {
         cache: false,
         success: function(result){
             console.log(result);
+            resetForm();
+            $("#registration_form").hide();
+            formIsOn = false;
+            displayBoard();
         },
         error: function (err) {
             console.log('exception caught');
