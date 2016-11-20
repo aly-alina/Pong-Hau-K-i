@@ -1,5 +1,10 @@
 <?php
-    include 'db_config.php';
+    try {
+        include 'db_config.php';
+    } catch(Exception $e) {
+        die(var_dump($e));
+    }
+
     if(!empty($_POST)) {
         try {
             //check the last row of game table

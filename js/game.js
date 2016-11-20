@@ -174,6 +174,8 @@ $("#submit").click(function(){
                 var latitude = location.lat();
                 var longitude = location.lng();
                 dataString += '&latitude=' + latitude + '&longitude=' + longitude;
+            } else {
+                console.log('Geocoder failed');
             }
             sendData(dataString);
             resetForm();
@@ -291,7 +293,6 @@ var sendData = function(dataString) {
             console.log(result);
         },
         error: function (err) {
-            //console.log(err);
             console.log('exception caught');
             window.location.href = "/error.html";
         }
