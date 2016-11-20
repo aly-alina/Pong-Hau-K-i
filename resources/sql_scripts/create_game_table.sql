@@ -6,7 +6,7 @@ CREATE TABLE game (
     first_player_second_token VARCHAR(255),
     second_player_first_token VARCHAR(255),
     second_player_second_token VARCHAR(255),
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_updated TIMESTAMP,
     game_is_on BOOLEAN DEFAULT 1,
     winner INT,
     PRIMARY KEY (id),

@@ -14,13 +14,31 @@
 
             // check if a user can be player 1
             if ($result->rowCount() == 0 || $games[0]['game_is_on'] == false) {
-                register_user($conn);
-                insert_new_game($conn);
+                register_player_1($conn);
             } else {
-                send_error_msg();
+                date_default_timezone_set("UTC");
+                $now = new DateTime();
+                $last_updated = new DateTime($games[0]['last_updated']);
+                $interval = $now->diff($last_updated);
+                if ($interval->h < 1) {
+                    $seconds = $interval->i*60 + $interval->s;
+                    if ($seconds > 900) {
+                        echo "More than 15 minutes elapsed. ";
+                        put_previous_game_offline($conn, $games[0]['id']);
+                        register_player_1($conn);
+                    } else {
+                        echo "Less than 15 minutes elapsed. ";
+                        send_error_msg();
+                    }
+                } else {
+                    echo "More than 15 minutes elapsed. ";
+                    put_previous_game_offline($conn, $games[0]['id']);
+                    register_player_1($conn);
+                }
             }
         }
         catch(Exception $e) {
+            send_error_msg();
             die(var_dump($e));
         }
     }
@@ -32,12 +50,15 @@
     }
 
     function insert_new_game($conn) {
-        $sql_game_insert = "INSERT INTO game (first_player_username) VALUES (?)";
+        date_default_timezone_set("UTC");
+        $now = new DateTime();
+        $sql_game_insert = "INSERT INTO game (first_player_username, last_updated) VALUES (?, ?)";
         $first_player = $_POST['name'];
         $cursor = $conn->prepare($sql_game_insert);
         $cursor->bindValue(1, $first_player);
+        $cursor->bindValue(2, date($now->format('Y-m-d H:i:s')));
         $cursor->execute();
-        echo "First player entered. Game created successfully";
+        echo "First player entered. Game created successfully. ";
     }
 
     function register_user($conn) {
@@ -72,10 +93,22 @@
                 $cursor->bindValue(3, $age);
             }
             $cursor->execute();
-            echo "Registration was successful";
+            echo "Registration was successful. ";
         } else {
-            echo "User is already registered";
+            echo "User is already registered. ";
         }
+    }
+
+    function register_player_1($conn) {
+        register_user($conn);
+        insert_new_game($conn);
+    }
+
+    function put_previous_game_offline($conn, $game_id) {
+        $sql = "UPDATE game SET game_is_on='0' WHERE id=(?)";
+        $cursor = $conn->prepare($sql);
+        $cursor->bindValue(1, $game_id);
+        $cursor->execute();
     }
 
 ?>
