@@ -215,6 +215,7 @@ var displayBoard = function() {
         console.log("first player starts");
         startTurn();
     } else {
+        stopTurn();
         wait();
     }
 };
