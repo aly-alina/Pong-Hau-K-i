@@ -301,11 +301,6 @@ var turnOffForm = function() {
 var startTurn = function() {
     players[playerOpponentPropName].turn = false;
     players[playerPropertyMyName].turn = true;
-    // if (checkIfLose("player1")) {
-    //     // stop();
-    //     lose("player1");
-    //     return;
-    // }
     displayTextWhosTurn(players[playerPropertyMyName].name, players[playerPropertyMyName].color);
     changeDraggableAttribute(players[playerPropertyMyName].tokens, true);
     changeDraggableAttribute(players[playerOpponentPropName].tokens, false);
@@ -316,18 +311,54 @@ var wait = function() {
     displayTextWhosTurn(players[playerOpponentPropName].name, players[playerOpponentPropName].color);
     changeDraggableAttribute(players[playerOpponentPropName].tokens, false);
     changeDraggableAttribute(players[playerPropertyMyName].tokens, false);
-    // repeat every 10 s
-    //     fetch data
-    //     if winner name not empty
-    //      !! check if won IN DROP
-    //         stop(players[playerPropertyMyName].name + " lost", players[playerPropertyMyName].color);
-    //     if offline
-    //         send error
-    //     if positions changed
-    //         set new positions
-    //         start turn
-    //     else
-    //         repeat again
+    setTimeout(waitLoop, 5000);
+};
+
+function waitLoop() {
+    var winner;
+    var offline;
+    var positions;
+    $.ajax({
+        url: "/resources/fetch_game_info_with_id.php",
+        type: "POST",
+        data: '&id=' + gameId,
+        cache: false,
+        dataType: 'json',
+        success: function(result){
+            console.log(result);
+            if (result == '[]') {
+                // try at least to fetch last game entry
+                $.ajax({
+                    url: "/resources/fetch_last_game_positions.php",
+                    data: "",
+                    dataType: 'json',
+                    success: function(result){
+                        console.log(result);
+                    },
+                    error: function (err) {
+                        console.log('exception caught');
+                        console.log(err);
+                        //window.location.href = "/error.html";
+                    }
+                });
+            }
+        },
+        error: function (err) {
+            console.log('exception caught');
+            console.log(err);
+            //window.location.href = "/error.html";
+        }
+    });
+    // if winner name not empty
+    //  !! check if won IN DROP
+    //     stop(players[playerPropertyMyName].name + " lost", players[playerPropertyMyName].color);
+    // if offline
+    //     send error
+    // if positions changed
+    //     set new positions
+    //     start turn
+    // else
+    //     setTimeout(waitLoop, 10000);
 };
 
 var stopTurn = function() {
