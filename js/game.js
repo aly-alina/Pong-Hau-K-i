@@ -341,7 +341,6 @@ var sendPositionsUpdate = function() {
             }
         }
     }
-    console.log(dataString);
     $.ajax({
         type: "POST",
         url: "/resources/update_game_info.php",
