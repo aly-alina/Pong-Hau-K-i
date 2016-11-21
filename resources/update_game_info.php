@@ -1,7 +1,7 @@
 <?php
     try {
         include 'db_config.php';
-        $id = get_last_game_id($conn);
+        $id = $_POST['id'];
         date_default_timezone_set("UTC");
         $now = new DateTime();
         $topLeft = parse_values_from_post('topLeftVertex');
@@ -52,12 +52,5 @@
         } else {
             return null;
         }
-    }
-
-    function get_last_game_id($conn) {
-        $sql_game_last_row = "SELECT * FROM game ORDER BY id DESC LIMIT 1";
-        $result = $conn->query($sql_game_last_row);
-        $games = $result->fetchAll();
-        return $games[0]['id'];
     }
 ?>

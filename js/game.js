@@ -276,7 +276,7 @@ var stop = function(text, color) {
         gameIsOn = false;
         gameBoardBox.style.display = "none";
         stopBox.style.display = "block";
-        stopBox.innerHTML = text;
+        stopBox.innerHTML = "Game is over. " + text;
         stopBox.style.color = color;
         stopMessageOn = true;
     }
@@ -326,27 +326,8 @@ function waitLoop() {
         cache: false,
         dataType: 'json',
         success: function(result){
-            if (result == '[]') {
-                // try at least to fetch last game entry
-                $.ajax({
-                    url: "/resources/fetch_last_game_positions.php",
-                    data: "",
-                    dataType: 'json',
-                    success: function(result){
-                        if (checkIfNeedToWaitMore(result[0])) {
-                            setTimeout(waitLoop, 5000);
-                        }
-                    },
-                    error: function (err) {
-                        console.log('exception caught');
-                        console.log(err);
-                        window.location.href = "/error.html";
-                    }
-                });
-            } else {
-                if(checkIfNeedToWaitMore(result[0])) {
-                    setTimeout(waitLoop, 5000);
-                }
+            if(checkIfNeedToWaitMore(result[0])) {
+                setTimeout(waitLoop, 5000);
             }
         },
         error: function (err) {
@@ -355,16 +336,6 @@ function waitLoop() {
             window.location.href = "/error.html";
         }
     });
-    // if winner name not empty
-    //  !! check if won IN DROP
-    //     stop(players[playerPropertyMyName].name + " lost", players[playerPropertyMyName].color);
-    // if offline
-    //     send error
-    // if positions changed
-    //     set new positions
-    //     start turn
-    // else
-    //     setTimeout(waitLoop, 10000);
 };
 
 var checkIfNeedToWaitMore = function(result) {
@@ -437,6 +408,7 @@ var sendPositionsUpdate = function() {
             }
         }
     }
+    dataString += '&id=' + gameId;
     $.ajax({
         type: "POST",
         url: "/resources/update_game_info.php",

@@ -10,33 +10,10 @@
         $winner = $_POST['winner'];
         $id = $_POST['id'];
         send_winner_to_game_with_id($conn, $id, $winner);
-        echo "winner sent with id. ";
-    } catch(Exception $e) {
-        try {
-            $winner = $_POST['winner'];
-            $id = get_last_game_id($conn);
-            send_winner_to_game_with_id($conn, $id, $winner);
-            echo "winner sent to last. ";
-            //increment_win($conn, $winner, $id);
-        } catch(Exception $e) {
-            send_error_msg();
-            die(var_dump($e));
-        }
-    }
-
-    try {
-        $winner = $_POST['winner'];
-        $id = $_POST['id'];
         increment_win($conn, $winner, $id);
     } catch(Exception $e) {
-        try {
-            $winner = $_POST['winner'];
-            $id = get_last_game_id($conn);
-            increment_win($conn, $winner, $id);
-        } catch(Exception $e) {
-            send_error_msg();
-            die(var_dump($e));
-        }
+        send_error_msg();
+        die(var_dump($e));
     }
 
     function increment_win($conn, $winner, $id) {
