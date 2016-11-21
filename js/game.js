@@ -333,7 +333,9 @@ function waitLoop() {
                     success: function(result){
                         console.log('game data from db:');
                         console.log(result);
-                        checkGameCondition(result[0]);
+                        if (checkIfNeedToWaitMore(result[0])) {
+                            setTimeout(waitLoop, 5000);
+                        }
                     },
                     error: function (err) {
                         console.log('exception caught');
@@ -342,7 +344,9 @@ function waitLoop() {
                     }
                 });
             } else {
-                checkGameCondition(result[0]);
+                if(checkIfNeedToWaitMore(result[0])) {
+                    setTimeout(waitLoop, 5000);
+                }
             }
         },
         error: function (err) {
@@ -363,7 +367,7 @@ function waitLoop() {
     //     setTimeout(waitLoop, 10000);
 };
 
-var checkGameCondition = function(result) {
+var checkIfNeedToWaitMore = function(result) {
     var winner;
     var offline;
     var positions;
@@ -385,8 +389,11 @@ var checkGameCondition = function(result) {
     console.log(new_positions);
     if (check_if_positions_changed(new_positions, currentTokensPositions)) {
         console.log('changed');
+        change_tokens_locations(new_positions);
+        startTurn();
+        return false;
     } else {
-        console.log('not changed');
+        return true;
     }
 };
 
@@ -458,6 +465,18 @@ var check_if_positions_changed = function(positions, currentPositions) {
         }
     }
     return false;
+};
+
+var change_tokens_locations = function(newPositions) {
+    for (var property in newPositions) {
+        if (newPositions.hasOwnProperty(property)) {
+            if (newPositions[property]) {
+                var vertexId = "#" + property;
+                var tokenId = "#" + newPositions[property];
+                $(vertexId).append($(tokenId));
+            }
+        }
+    }
 };
 
 /**
