@@ -17,20 +17,38 @@ var currentTokensPositions = { // keeps which token is inside which vertex (vert
 };
 var initialVerticesPlayer1 = ["topLeftVertex", "topRightVertex"];
 var initialVerticesPlayer2 = ["bottomLeftVertex", "bottomRightVertex"];
-var players = {
-    "player1": {
-        "name": "Player 1",
+var player1 = {
+    "my": {
+        "name": "My",
         "color": "#9ab7f3",
         "turn": false,
         "tokens": ["tokenPlayer1", "token2Player1"]
     },
-    "player2": {
-        "name": "Player 2",
+    "not_my": {
+        "name": "Not my",
         "color": "#1abc9c",
         "turn": false,
         "tokens": ["tokenPlayer2", "token2Player2"]
     }
 };
+var player2 = {
+    "not_my": {
+        "name": "Not my",
+        "color": "#9ab7f3",
+        "turn": false,
+        "tokens": ["tokenPlayer1", "token2Player1"]
+    },
+    "my": {
+        "name": "My",
+        "color": "#1abc9c",
+        "turn": false,
+        "tokens": ["tokenPlayer2", "token2Player2"]
+    }
+};
+var playerPropertyMyName = "my";
+var playerOpponentPropName = "not_my";
+var players;
+var isFirstPlayer;
 var boxForCurrentPlayerDisplay = document.getElementById("whosTurn");
 var vertexLeftEmpty = "";
 var adjacentVertices = {
@@ -195,16 +213,34 @@ var displayBoard = function() {
     gameIsOn = true;
     gameBoardBox.style.display = "block";
     reset();
-    startPlayer1Turn();
+    if (isFirstPlayer) {
+        console.log("first player starts");
+        startTurn();
+    } else {
+        console.log("waiting");
+    }
+};
+
+var determinePlayer = function(resultingStr) {
+    if (resultingStr.indexOf("player 1") !== -1) {
+        players = player1;
+        isFirstPlayer = true;
+    } else if (resultingStr.indexOf("player 2") !== -1) {
+        players = player2;
+        isFirstPlayer = false;
+    } else {
+        console.log("player is not determined");
+        window.location.href = "/error.html";
+    }
 };
 
 var reset = function() {
     vertexLeftEmpty = "";
     emptyVertices();
-    players['player1'].turn = false;
-    players['player2'].turn = false;
-    initTokensOfAPlayer(initialVerticesPlayer1, players['player1'].tokens);
-    initTokensOfAPlayer(initialVerticesPlayer2, players['player2'].tokens);
+    players[playerPropertyMyName].turn = false;
+    players[playerOpponentPropName].turn = false;
+    initTokensOfAPlayer(initialVerticesPlayer1, players[playerPropertyMyName].tokens);
+    initTokensOfAPlayer(initialVerticesPlayer2, players[playerOpponentPropName].tokens);
 };
 
 var stop = function(text, color) {
@@ -242,17 +278,17 @@ var turnOffForm = function() {
     formIsOn = false;
 };
 
-var startPlayer1Turn = function() {
-    players['player2'].turn = false;
-    players['player1'].turn = true;
-    if (checkIfLose("player1")) {
-        // stop();
-        lose("player1");
-        return;
-    }
-    displayTextWhosTurn(players['player1'].name, players['player1'].color);
-    changeDraggableAttribute(players['player1'].tokens, true);
-    changeDraggableAttribute(players['player2'].tokens, false);
+var startTurn = function() {
+    players[playerOpponentPropName].turn = false;
+    players[playerPropertyMyName].turn = true;
+    // if (checkIfLose("player1")) {
+    //     // stop();
+    //     lose("player1");
+    //     return;
+    // }
+    displayTextWhosTurn(players[playerPropertyMyName].name, players[playerPropertyMyName].color);
+    changeDraggableAttribute(players[playerPropertyMyName].tokens, true);
+    changeDraggableAttribute(players[playerOpponentPropName].tokens, false);
 };
 
 var startPlayer2Turn = function() {
@@ -275,7 +311,7 @@ var stopPlayer1Turn = function() {
 
 var stopPlayer2Turn = function() {
     players['player2'].turn = false;
-    startPlayer1Turn();
+    startTurn();
 };
 
 /* ------------- OTHER FUNCTIONS -------- */
@@ -291,10 +327,12 @@ var sendData = function(dataString) {
             resetForm();
             $("#registration_form").hide();
             formIsOn = false;
+            determinePlayer(result);
             displayBoard();
         },
         error: function (err) {
             console.log('exception caught');
+            console.log(err);
             window.location.href = "/error.html";
         }
     });

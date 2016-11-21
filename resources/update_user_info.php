@@ -18,7 +18,7 @@
                 $now = new DateTime();
                 $last_updated = new DateTime($games[0]['last_updated']);
                 $interval = $now->diff($last_updated);
-                if ($interval->h < 1) {
+                if ($interval->h < 1 && $interval->d < 1 && $interval->m < 1 && $interval->y < 1) {
                     $seconds = $interval->i*60 + $interval->s;
                     if ($seconds > 900) {
                         echo "More than 15 minutes elapsed. ";
