@@ -169,11 +169,9 @@ var drop = function(e) {
 
     targetVertex.appendChild(document.getElementById(data));
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
-    if (players['player1'].turn) {
-        stopPlayer1Turn();
-    } else if (players['player2'].turn) {
-        stopPlayer2Turn();
-    }
+    sendPositionsUpdate();
+    stopTurn();
+    wait();
 };
 
 $("#submit").click(function(){
@@ -217,7 +215,7 @@ var displayBoard = function() {
         console.log("first player starts");
         startTurn();
     } else {
-        console.log("waiting");
+        wait();
     }
 };
 
@@ -291,27 +289,23 @@ var startTurn = function() {
     changeDraggableAttribute(players[playerOpponentPropName].tokens, false);
 };
 
-var startPlayer2Turn = function() {
-    players['player1'].turn = false;
-    players['player2'].turn = true;
-    if (checkIfLose("player2")) {
-        // stop();
-        lose("player2");
-        return;
-    }
-    displayTextWhosTurn(players['player2'].name, players['player2'].color);
-    changeDraggableAttribute(players['player2'].tokens, true);
-    changeDraggableAttribute(players['player1'].tokens, false);
+var wait = function() {
+    console.log('waiting');
+    // players['player1'].turn = false;
+    // players['player2'].turn = true;
+    // if (checkIfLose("player2")) {
+    //     // stop();
+    //     lose("player2");
+    //     return;
+    // }
+    // displayTextWhosTurn(players['player2'].name, players['player2'].color);
+    // changeDraggableAttribute(players['player2'].tokens, true);
+    // changeDraggableAttribute(players['player1'].tokens, false);
 };
 
-var stopPlayer1Turn = function() {
-    players['player1'].turn = false;
-    startPlayer2Turn();
-};
-
-var stopPlayer2Turn = function() {
-    players['player2'].turn = false;
-    startTurn();
+var stopTurn = function() {
+    players[playerPropertyMyName].turn = false;
+    players[playerOpponentPropName].turn = true;
 };
 
 /* ------------- OTHER FUNCTIONS -------- */
@@ -329,6 +323,32 @@ var sendData = function(dataString) {
             formIsOn = false;
             determinePlayer(result);
             displayBoard();
+        },
+        error: function (err) {
+            console.log('exception caught');
+            console.log(err);
+            window.location.href = "/error.html";
+        }
+    });
+};
+
+var sendPositionsUpdate = function() {
+    var dataString = "";
+    for (var property in currentTokensPositions) {
+        if (currentTokensPositions.hasOwnProperty(property)) {
+            if (currentTokensPositions[property]) {
+                dataString += '&' + property + '=' + currentTokensPositions[property];
+            }
+        }
+    }
+    console.log(dataString);
+    $.ajax({
+        type: "POST",
+        url: "/resources/update_game_info.php",
+        data: dataString,
+        cache: false,
+        success: function(result){
+            console.log(result);
         },
         error: function (err) {
             console.log('exception caught');
