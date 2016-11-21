@@ -1,12 +1,7 @@
 <?php
     try {
         include 'db_config.php';
-        $sql_game_last_row = "SELECT top_left_vertex,
-            top_right_vertex,
-            middle_vertex,
-            bottom_left_vertex,
-            bottom_right_vertex
-            FROM game ORDER BY id DESC LIMIT 1";
+        $sql_game_last_row = "SELECT * FROM game ORDER BY id DESC LIMIT 1";
         $result = $conn->query($sql_game_last_row);
         $games = $result->fetchAll();
         echo json_encode($games);

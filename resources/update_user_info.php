@@ -65,11 +65,12 @@
     function insert_new_game($conn) {
         date_default_timezone_set("UTC");
         $now = new DateTime();
+        $now_formatted = $now->format('Y-m-d H:i:s');
         $sql_game_insert = "INSERT INTO game (first_player_username, last_updated) VALUES (?, ?)";
         $first_player = $_POST['name'];
         $cursor = $conn->prepare($sql_game_insert);
         $cursor->bindValue(1, $first_player);
-        $cursor->bindValue(2, date($now->format('Y-m-d H:i:s')));
+        $cursor->bindValue(2, date($now_formatted));
         $cursor->execute();
         echo "First player entered. Game created successfully. ";
     }
@@ -126,6 +127,8 @@
         register_user($conn);
         insert_new_game($conn);
         echo "You are player 1. ";
+        $id = select_last_row($conn)->fetchAll()[0]['id'];
+        echo "Your game id is: $id.";
     }
 
     /**
@@ -148,6 +151,8 @@
             update_time_of_last_game($conn, $game_id);
         }
         echo "You are player 2. ";
+        $id = select_last_row($conn)->fetchAll()[0]['id'];
+        echo "Your game id is: $id.";
     }
 
     /**

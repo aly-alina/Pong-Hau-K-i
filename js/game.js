@@ -51,6 +51,7 @@ var players;
 var isFirstPlayer;
 var boxForCurrentPlayerDisplay = document.getElementById("whosTurn");
 var vertexLeftEmpty = "";
+var gameId = 0;
 var adjacentVertices = {
     'topLeftVertex': ['middleVertex', 'bottomLeftVertex'],
     'topRightVertex': ['middleVertex', 'bottomRightVertex'],
@@ -171,6 +172,7 @@ var drop = function(e) {
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
     sendPositionsUpdate();
     stopTurn();
+    // !! check if won
     wait();
 };
 
@@ -229,7 +231,21 @@ var determinePlayer = function(resultingStr) {
         isFirstPlayer = false;
     } else {
         console.log("player is not determined");
-        window.location.href = "/error.html";
+        //window.location.href = "/error.html";
+    }
+};
+
+var determineId = function(resultStr) {
+    var str = "game id is:";
+    if (resultStr.indexOf(str) !== -1) {
+        var indexIdStart = resultStr.indexOf(str) + str.length;
+        var indexIdEnds = resultStr.indexOf('.', indexIdStart);
+        var id = resultStr.substring(indexIdStart, indexIdEnds);
+        gameId = parseInt(id);
+        console.log(gameId);
+    } else {
+        console.log("game id is not determined");
+        //window.location.href = "/error.html";
     }
 };
 
@@ -238,8 +254,13 @@ var reset = function() {
     emptyVertices();
     players[playerPropertyMyName].turn = false;
     players[playerOpponentPropName].turn = false;
-    initTokensOfAPlayer(initialVerticesPlayer1, players[playerPropertyMyName].tokens);
-    initTokensOfAPlayer(initialVerticesPlayer2, players[playerOpponentPropName].tokens);
+    if (isFirstPlayer) {
+        initTokensOfAPlayer(initialVerticesPlayer1, players[playerPropertyMyName].tokens);
+        initTokensOfAPlayer(initialVerticesPlayer2, players[playerOpponentPropName].tokens);
+    } else {
+        initTokensOfAPlayer(initialVerticesPlayer1, players[playerOpponentPropName].tokens);
+        initTokensOfAPlayer(initialVerticesPlayer2, players[playerPropertyMyName].tokens);
+    }
 };
 
 var stop = function(text, color) {
@@ -292,16 +313,21 @@ var startTurn = function() {
 
 var wait = function() {
     console.log('waiting');
-    // players['player1'].turn = false;
-    // players['player2'].turn = true;
-    // if (checkIfLose("player2")) {
-    //     // stop();
-    //     lose("player2");
-    //     return;
-    // }
-    // displayTextWhosTurn(players['player2'].name, players['player2'].color);
-    // changeDraggableAttribute(players['player2'].tokens, true);
-    // changeDraggableAttribute(players['player1'].tokens, false);
+    displayTextWhosTurn(players[playerOpponentPropName].name, players[playerOpponentPropName].color);
+    changeDraggableAttribute(players[playerOpponentPropName].tokens, false);
+    changeDraggableAttribute(players[playerPropertyMyName].tokens, false);
+    // repeat every 10 s
+    //     fetch data
+    //     if winner name not empty
+    //      !! check if won IN DROP
+    //         stop(players[playerPropertyMyName].name + " lost", players[playerPropertyMyName].color);
+    //     if offline
+    //         send error
+    //     if positions changed
+    //         set new positions
+    //         start turn
+    //     else
+    //         repeat again
 };
 
 var stopTurn = function() {
@@ -323,12 +349,13 @@ var sendData = function(dataString) {
             $("#registration_form").hide();
             formIsOn = false;
             determinePlayer(result);
+            determineId(result);
             displayBoard();
         },
         error: function (err) {
             console.log('exception caught');
             console.log(err);
-            window.location.href = "/error.html";
+            //window.location.href = "/error.html";
         }
     });
 };
