@@ -170,10 +170,16 @@ var drop = function(e) {
 
     targetVertex.appendChild(document.getElementById(data));
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
-    sendPositionsUpdate();
-    stopTurn();
-    // !! check if won
-    wait();
+    if (checkIfLose(playerOpponentPropName)) {
+        console.log('inside if');
+        sendWinner();
+        lose(playerOpponentPropName);
+    } else {
+        console.log('inside else');
+        sendPositionsUpdate();
+        stopTurn();
+        wait();
+    }
 };
 
 $("#submit").click(function(){
@@ -214,7 +220,6 @@ var displayBoard = function() {
     gameBoardBox.style.display = "block";
     reset();
     if (isFirstPlayer) {
-        console.log("first player starts");
         startTurn();
     } else {
         stopTurn();
@@ -242,7 +247,6 @@ var determineId = function(resultStr) {
         var indexIdEnds = resultStr.indexOf('.', indexIdStart);
         var id = resultStr.substring(indexIdStart, indexIdEnds);
         gameId = parseInt(id);
-        console.log(gameId);
     } else {
         console.log("game id is not determined");
         window.location.href = "/error.html";
@@ -263,6 +267,11 @@ var reset = function() {
     }
 };
 
+var lose = function(playersPropertyName) {
+    console.log('inside lose');
+    stop(players[playersPropertyName].name + " lost", players[playersPropertyName].color);
+};
+
 var stop = function(text, color) {
     if (gameIsOn) {
         gameIsOn = false;
@@ -272,10 +281,6 @@ var stop = function(text, color) {
         stopBox.style.color = color;
         stopMessageOn = true;
     }
-};
-
-var lose = function(playersPropertyName) {
-    stop(players[playersPropertyName].name + " lost", players[playersPropertyName].color);
 };
 
 var turnOffReadme = function() {
@@ -307,7 +312,6 @@ var startTurn = function() {
 };
 
 var wait = function() {
-    console.log('waiting');
     displayTextWhosTurn(players[playerOpponentPropName].name, players[playerOpponentPropName].color);
     changeDraggableAttribute(players[playerOpponentPropName].tokens, false);
     changeDraggableAttribute(players[playerPropertyMyName].tokens, false);
@@ -315,6 +319,7 @@ var wait = function() {
 };
 
 function waitLoop() {
+    console.log('in wait loop');
     $.ajax({
         url: "/resources/fetch_game_info_with_id.php",
         type: "POST",
@@ -322,8 +327,6 @@ function waitLoop() {
         cache: false,
         dataType: 'json',
         success: function(result){
-            console.log('game data from db:');
-            console.log(result);
             if (result == '[]') {
                 // try at least to fetch last game entry
                 $.ajax({
@@ -331,8 +334,6 @@ function waitLoop() {
                     data: "",
                     dataType: 'json',
                     success: function(result){
-                        console.log('game data from db:');
-                        console.log(result);
                         if (checkIfNeedToWaitMore(result[0])) {
                             setTimeout(waitLoop, 5000);
                         }
@@ -385,11 +386,9 @@ var checkIfNeedToWaitMore = function(result) {
             }
         }
     }
-    console.log('new positions:');
-    console.log(new_positions);
     if (check_if_positions_changed(new_positions, currentTokensPositions)) {
-        console.log('changed');
         change_tokens_locations(new_positions);
+        currentTokensPositions = new_positions;
         startTurn();
         return false;
     } else {
@@ -440,6 +439,24 @@ var sendPositionsUpdate = function() {
         type: "POST",
         url: "/resources/update_game_info.php",
         data: dataString,
+        cache: false,
+        success: function(result){
+            console.log(result);
+        },
+        error: function (err) {
+            console.log('exception caught');
+            console.log(err);
+            window.location.href = "/error.html";
+        }
+    });
+};
+
+var sendWinner = function() {
+    var winnerInt = (isFirstPlayer) ? 1 : 2;
+    $.ajax({
+        type: "POST",
+        url: "/resources/update_winner.php",
+        data: '&id=' + gameId + '&winner=' + winnerInt,
         cache: false,
         success: function(result){
             console.log(result);
@@ -528,7 +545,7 @@ var emptyVertices = function() {
 /**
  * Checks if a player has lost the game
  * The game is lost when all adjacent vertices for this player are occupied (player cannot move anymore)
- * @param player - string, property of object 'tokens'
+ * @param player - string, property of object 'players'
  * @returns {boolean} - true if the player has lost, false if there is at least one free adjacent vertex
  */
 var checkIfLose = function(player) {
