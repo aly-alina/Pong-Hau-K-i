@@ -231,7 +231,7 @@ var determinePlayer = function(resultingStr) {
         isFirstPlayer = false;
     } else {
         console.log("player is not determined");
-        //window.location.href = "/error.html";
+        window.location.href = "/error.html";
     }
 };
 
@@ -245,7 +245,7 @@ var determineId = function(resultStr) {
         console.log(gameId);
     } else {
         console.log("game id is not determined");
-        //window.location.href = "/error.html";
+        window.location.href = "/error.html";
     }
 };
 
@@ -315,9 +315,6 @@ var wait = function() {
 };
 
 function waitLoop() {
-    var winner;
-    var offline;
-    var positions;
     $.ajax({
         url: "/resources/fetch_game_info_with_id.php",
         type: "POST",
@@ -325,6 +322,7 @@ function waitLoop() {
         cache: false,
         dataType: 'json',
         success: function(result){
+            console.log('game data from db:');
             console.log(result);
             if (result == '[]') {
                 // try at least to fetch last game entry
@@ -333,20 +331,24 @@ function waitLoop() {
                     data: "",
                     dataType: 'json',
                     success: function(result){
+                        console.log('game data from db:');
                         console.log(result);
+                        checkGameCondition(result[0]);
                     },
                     error: function (err) {
                         console.log('exception caught');
                         console.log(err);
-                        //window.location.href = "/error.html";
+                        window.location.href = "/error.html";
                     }
                 });
+            } else {
+                checkGameCondition(result[0]);
             }
         },
         error: function (err) {
             console.log('exception caught');
             console.log(err);
-            //window.location.href = "/error.html";
+            window.location.href = "/error.html";
         }
     });
     // if winner name not empty
@@ -359,6 +361,33 @@ function waitLoop() {
     //     start turn
     // else
     //     setTimeout(waitLoop, 10000);
+};
+
+var checkGameCondition = function(result) {
+    var winner;
+    var offline;
+    var positions;
+    var new_positions = {
+        'topLeftVertex': result['top_left_vertex'],
+        'topRightVertex': result['top_right_vertex'],
+        'middleVertex': result['middle_vertex'],
+        'bottomLeftVertex': result['bottom_left_vertex'],
+        'bottomRightVertex': result['bottom_right_vertex']
+    };
+    for (var property in new_positions) {
+        if (new_positions.hasOwnProperty(property)) {
+            if (new_positions[property] === null) {
+                new_positions[property] = "";
+            }
+        }
+    }
+    console.log('new positions:');
+    console.log(new_positions);
+    if (check_if_positions_changed(new_positions, currentTokensPositions)) {
+        console.log('changed');
+    } else {
+        console.log('not changed');
+    }
 };
 
 var stopTurn = function() {
@@ -386,7 +415,7 @@ var sendData = function(dataString) {
         error: function (err) {
             console.log('exception caught');
             console.log(err);
-            //window.location.href = "/error.html";
+            window.location.href = "/error.html";
         }
     });
 };
@@ -414,6 +443,21 @@ var sendPositionsUpdate = function() {
             window.location.href = "/error.html";
         }
     });
+};
+
+/**
+ * Check is the object has same values as currentPositions
+ * @param positions - object with properties similar to currentTokensPositions
+ */
+var check_if_positions_changed = function(positions, currentPositions) {
+    for (var property in currentPositions) {
+        if (currentPositions.hasOwnProperty(property)) {
+            if (currentPositions[property] != positions[property]) {
+                return true;
+            }
+        }
+    }
+    return false;
 };
 
 /**

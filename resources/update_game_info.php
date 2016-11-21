@@ -50,7 +50,7 @@
         if (isset($_POST[$str])) {
             return $_POST[$str];
         } else {
-            return 'NULL';
+            return null;
         }
     }
 
