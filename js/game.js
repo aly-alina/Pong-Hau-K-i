@@ -268,8 +268,7 @@ var reset = function() {
 };
 
 var lose = function(playersPropertyName) {
-    console.log('inside lose');
-    stop(players[playersPropertyName].name + " lost", players[playersPropertyName].color);
+    stop(players[playersPropertyName].name + " lost", 'black');
 };
 
 var stop = function(text, color) {
@@ -369,9 +368,12 @@ function waitLoop() {
 };
 
 var checkIfNeedToWaitMore = function(result) {
-    var winner;
+    var winner = result['winner'];
+    if (winner !== null) {
+        lose(playerPropertyMyName);
+        return false;
+    }
     var offline;
-    var positions;
     var new_positions = {
         'topLeftVertex': result['top_left_vertex'],
         'topRightVertex': result['top_right_vertex'],
