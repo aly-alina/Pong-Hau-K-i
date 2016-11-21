@@ -171,11 +171,9 @@ var drop = function(e) {
     targetVertex.appendChild(document.getElementById(data));
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
     if (checkIfLose(playerOpponentPropName)) {
-        console.log('inside if');
         sendWinner();
         lose(playerOpponentPropName);
     } else {
-        console.log('inside else');
         sendPositionsUpdate();
         stopTurn();
         wait();
@@ -344,7 +342,13 @@ var checkIfNeedToWaitMore = function(result) {
         lose(playerPropertyMyName);
         return false;
     }
-    var offline;
+    var online = result['game_is_on'];
+    console.log(online);
+    if (online == 0) {
+        console.log('not online');
+        stop("Your game time has expired (someone else is plying)", 'black');
+        return false;
+    }
     var new_positions = {
         'topLeftVertex': result['top_left_vertex'],
         'topRightVertex': result['top_right_vertex'],
