@@ -11,6 +11,7 @@
         $id = $_POST['id'];
         send_winner_to_game_with_id($conn, $id, $winner);
         increment_win($conn, $winner, $id);
+        echo "Winner added successfully";
     } catch(Exception $e) {
         send_error_msg();
         die(var_dump($e));
@@ -22,7 +23,6 @@
         } else if ($winner == 2) {
             $col='second_player_username';
         }
-        echo "winner user is " . $col . ".";
         $sql_select = "SELECT $col FROM game WHERE id='$id'";
         $result = $conn->query($sql_select);
         $users = $result->fetchAll();

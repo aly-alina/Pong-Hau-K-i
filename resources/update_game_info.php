@@ -26,6 +26,7 @@
         $cursor->bindValue(6, $now->format('Y-m-d H:i:s'));
         $cursor->bindValue(7, $id);
         $cursor->execute();
+        echo "Game updated successfully";
     } catch(Exception $e) {
         send_error_msg();
         die(var_dump($e));

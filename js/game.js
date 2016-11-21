@@ -343,9 +343,7 @@ var checkIfNeedToWaitMore = function(result) {
         return false;
     }
     var online = result['game_is_on'];
-    console.log(online);
     if (online == 0) {
-        console.log('not online');
         stop("Your game time has expired (someone else is plying)", 'black');
         return false;
     }
