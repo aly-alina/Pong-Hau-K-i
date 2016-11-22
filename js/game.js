@@ -128,7 +128,8 @@ var displayMap = function(e) {
                         var marker = new google.maps.Marker({
                             position: new google.maps.LatLng(result[i]["lat"], result[i]["lng"]),
                             map: map,
-                            title: result[i]["name"] + ", won " + result[i]["number_of_wins"] + " times"
+                            title: result[i]["name"] + ", " + result[i]["age"] + " years old.<br>"
+                                + "Won " + result[i]["number_of_wins"] + " times"
                         });
                         google.maps.event.addListener(marker,'click',function() {
                             var infowindow = new google.maps.InfoWindow({
