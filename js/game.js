@@ -80,6 +80,7 @@ var startGame = function(e) {
 };
 
 var stopGame = function(e) {
+    finishOnlineGame(null);
     stop("The game was stopped", "black");
 };
 
@@ -171,7 +172,8 @@ var drop = function(e) {
     targetVertex.appendChild(document.getElementById(data));
     currentTokensPositions[targetVertex.id] = data; // token in this vertex now
     if (checkIfLose(playerOpponentPropName)) {
-        sendWinner();
+        var winnerId = (isFirstPlayer) ? 1 : 2;
+        finishOnlineGame(winnerId);
         lose(playerOpponentPropName);
     } else {
         sendPositionsUpdate();
@@ -344,7 +346,7 @@ var checkIfNeedToWaitMore = function(result) {
     }
     var online = result['game_is_on'];
     if (online == 0) {
-        stop("Your game time has expired (someone else is plying)", 'black');
+        stop("Your game time has expired (someone else is playing) or was stopped by another player", 'black');
         return false;
     }
     var new_positions = {
@@ -427,8 +429,7 @@ var sendPositionsUpdate = function() {
     });
 };
 
-var sendWinner = function() {
-    var winnerInt = (isFirstPlayer) ? 1 : 2;
+var finishOnlineGame = function(winnerInt) {
     $.ajax({
         type: "POST",
         url: "/resources/update_winner.php",

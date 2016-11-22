@@ -9,9 +9,13 @@
     try {
         $winner = $_POST['winner'];
         $id = $_POST['id'];
-        send_winner_to_game_with_id($conn, $id, $winner);
-        increment_win($conn, $winner, $id);
-        echo "Winner added successfully";
+        if ($winner != "null") {
+            send_winner_to_game_with_id($conn, $id, $winner);
+            increment_win($conn, $winner, $id);
+        } else {
+            send_winner_to_game_with_id($conn, $id, NULL);
+        }
+        echo "Game finished successfully";
     } catch(Exception $e) {
         send_error_msg();
         die(var_dump($e));
